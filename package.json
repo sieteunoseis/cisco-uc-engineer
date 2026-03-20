@@ -1,11 +1,10 @@
 {
   "name": "cisco-uc-engineer",
   "version": "1.0.0",
-  "description": "Cisco Unified Communications engineer skill for AI agents. Orchestrates cisco-axl, cisco-dime, cisco-ise, cisco-perfmon, and cisco-risport for UC troubleshooting, provisioning, and monitoring.",
+  "description": "Cisco Unified Communications engineer skill for AI agents. Orchestrates cisco-axl, cisco-dime, cisco-perfmon, and cisco-risport for UC troubleshooting, provisioning, and monitoring.",
   "keywords": [
     "cisco",
     "cucm",
-    "ise",
     "unified-communications",
     "skills",
     "ai",
