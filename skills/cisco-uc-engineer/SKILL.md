@@ -1,6 +1,6 @@
 ---
 name: cisco-uc-engineer
-description: Cisco Unified Communications engineer skill. Orchestrates cisco-axl, cisco-dime, cisco-perfmon, and cisco-risport CLIs for troubleshooting, provisioning, and monitoring UC infrastructure. Use when working across multiple Cisco UC tools or diagnosing complex issues.
+description: Cisco Unified Communications engineer skill. Orchestrates cisco-axl, cisco-dime, cisco-perfmon, cisco-risport, and cisco-support CLIs for troubleshooting, provisioning, monitoring, and lifecycle management of UC infrastructure. Use when working across multiple Cisco UC tools or diagnosing complex issues.
 license: MIT
 metadata:
   author: sieteunoseis
@@ -9,18 +9,19 @@ metadata:
 
 # Cisco UC Engineer
 
-Orchestration skill for Cisco Unified Communications. Connects cisco-axl, cisco-dime, cisco-perfmon, and cisco-risport to solve cross-domain UC problems.
+Orchestration skill for Cisco Unified Communications. Connects cisco-axl, cisco-dime, cisco-perfmon, cisco-risport, and cisco-support to solve cross-domain UC problems.
 
 ## Tool Detection
 
 Before starting any workflow, check which tools are available:
 
 ```bash
-# Check each tool — run all four, note which succeed
+# Check each tool — run all five, note which succeed
 cisco-axl --version 2>/dev/null && echo "cisco-axl: available" || echo "cisco-axl: not installed"
 cisco-dime --version 2>/dev/null && echo "cisco-dime: available" || echo "cisco-dime: not installed"
 cisco-perfmon --version 2>/dev/null && echo "cisco-perfmon: available" || echo "cisco-perfmon: not installed"
 cisco-risport --version 2>/dev/null && echo "cisco-risport: available" || echo "cisco-risport: not installed"
+cisco-support --version 2>/dev/null && echo "cisco-support: available" || echo "cisco-support: not installed"
 ```
 
 Report what's available and what's missing. If a workflow requires a missing tool, tell the user:
@@ -37,8 +38,11 @@ Adapt workflows to use only the tools that are installed. A partial toolkit is s
 | `cisco-dime` | CUCM log collection — SIP traces, SDL, audit logs, service logs | `cisco-dime` | `cisco-dime-cli` |
 | `cisco-perfmon` | Real-time performance counters — CPU, memory, call stats | `cisco-perfmon` | `cisco-perfmon-cli` |
 | `cisco-risport` | Device registration status — phone reg, CTI, trunk status | `cisco-risport` | `cisco-risport-cli` |
+| `cisco-support` | Cisco Support APIs — bugs, EoX, PSIRT, software, serial coverage | `cisco-support` | `cisco-support-cli` |
 
 Each tool has its own skill with detailed command reference. Use those skills for tool-specific questions. This skill is for workflows that span multiple tools.
+
+> Note: cisco-support uses separate Cisco API credentials (not CUCM credentials). It has its own config at `~/.cisco-support/config.json`.
 
 ## Cluster Alignment
 
@@ -154,6 +158,71 @@ cisco-dime select "Cisco CallManager" --last 1h
 cisco-dime select syslog --last 1h
 ```
 
+### Syslog Error → Bug Search
+
+**Tools needed:** cisco-dime, cisco-support
+
+```bash
+# 1. Pull syslogs to find errors
+cisco-dime select syslog --last 1h --download --decompress
+
+# 2. Look for error patterns — grep for alarm names, error codes, CSC bug IDs
+# Common patterns: %CCM_CALLMANAGER-CALLMANAGER-3-DeviceTransientConnection
+# If you find a CSCxx bug ID in the logs:
+cisco-support bug get CSCvx12345
+
+# 3. Search for known bugs matching the error
+cisco-support bug search --keyword "DeviceTransientConnection" --pid "Cisco Unified Communications Manager"
+cisco-support bug search --keyword "TransientConnection" --severity 1,2,3 --status open
+
+# 4. Check if there's a PSIRT advisory related to the issue
+cisco-support psirt --severity critical
+```
+
+**What to look for:**
+- Error messages in syslog often contain Cisco bug IDs (CSCxx format)
+- Alarm names map to known bugs — search for the alarm name as a keyword
+- If a bug is found, check if it's fixed in a newer release
+
+### Pre-Upgrade Research
+
+**Tools needed:** cisco-support, cisco-axl
+
+```bash
+# 1. Check current CUCM version
+cisco-axl sql query "SELECT version FROM componentversion WHERE softwarecomponent='callmanager'"
+
+# 2. Get software suggestions for your platform
+cisco-support software suggest --pid CUCM-LIC-15
+
+# 3. Compare bugs between current and target version
+cisco-support software compare --pid CUCM-LIC-15 --from 14.0 --to 15.0
+
+# 4. Check for security advisories affecting target version
+cisco-support psirt --severity critical --year 2026
+
+# 5. Check if any hardware is end-of-life
+cisco-support eox --pid CP-8841-K9
+cisco-support serial warranty FJC12345678
+```
+
+### Hardware Lifecycle Check
+
+**Tools needed:** cisco-support, cisco-axl
+
+```bash
+# 1. Get all phone models in the cluster
+cisco-axl sql query "SELECT DISTINCT tm.name AS model, COUNT(*) AS cnt FROM device d JOIN typemodel tm ON d.tkmodel=tm.enum WHERE d.tkclass=1 GROUP BY tm.name ORDER BY cnt DESC"
+
+# 2. Check EoX status for each model
+cisco-support eox --pid CP-8841-K9
+cisco-support eox --pid CP-7841-K9
+cisco-support eox --pid CP-8865-K9
+
+# 3. Check warranty for specific serial numbers
+cisco-support serial coverage FJC12345678
+```
+
 ### Audit / Change Investigation
 
 **Tools needed:** cisco-dime, cisco-axl
@@ -207,6 +276,9 @@ When the user reports a problem, follow this order:
 2. **Is the config correct?** → `cisco-axl get Phone --name <name>`
 3. **What do the logs show?** → `cisco-dime select sip-traces --last 30m`
 4. **Is the system healthy?** → `cisco-perfmon collect "Cisco CallManager" --counter "CallsActive"`
+
+5. **Are there known bugs?** → `cisco-support bug search --keyword "<error>" --pid "Cisco Unified Communications Manager"`
+6. **Is the hardware end-of-life?** → `cisco-support eox --pid <model>`
 
 Start broad, narrow down. Don't pull traces until you've checked the basics.
 
