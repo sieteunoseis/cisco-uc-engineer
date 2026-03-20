@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-orange?logo=buy-me-a-coffee)](https://buymeacoffee.com/automatebldrs)
 
-Cisco Unified Communications engineer skill for AI agents. Orchestrates [cisco-axl](https://github.com/sieteunoseis/cisco-axl), [cisco-dime](https://github.com/sieteunoseis/cisco-dime), [cisco-perfmon](https://github.com/sieteunoseis/cisco-perfmon), and [cisco-risport](https://github.com/sieteunoseis/cisco-risport) for UC troubleshooting, provisioning, and monitoring.
+Cisco Unified Communications engineer skill for AI agents. Orchestrates [cisco-axl](https://github.com/sieteunoseis/cisco-axl), [cisco-dime](https://github.com/sieteunoseis/cisco-dime), [cisco-perfmon](https://github.com/sieteunoseis/cisco-perfmon), [cisco-risport](https://github.com/sieteunoseis/cisco-risport), and [cisco-support](https://github.com/sieteunoseis/cisco-support) for UC troubleshooting, provisioning, monitoring, and lifecycle management.
 
 ## What is this?
 
@@ -13,16 +13,19 @@ This is a **meta-skill** — it doesn't have its own CLI. Instead, it teaches AI
 - Phone not registering? Check config (axl) → check registration (risport) → pull traces (dime)
 - Call quality issues? Check performance counters (perfmon) → pull SIP traces (dime)
 - Audit investigation? Pull audit logs (dime) → check current config (axl)
+- Pre-upgrade research? Check bugs (support) → check EoX (support) → compare versions (support)
+- Syslog errors? Pull syslogs (dime) → search known bugs (support)
 
 ## Installation
 
 ### 1. Install the CLI tools you need
 
 ```bash
-npm install -g cisco-axl     # CUCM configuration
-npm install -g cisco-dime     # CUCM log collection
-npm install -g cisco-perfmon  # Performance counters
-npm install -g cisco-risport  # Device registration
+npm install -g cisco-axl      # CUCM configuration
+npm install -g cisco-dime      # CUCM log collection
+npm install -g cisco-perfmon   # Performance counters
+npm install -g cisco-risport   # Device registration
+npm install -g cisco-support   # Bugs, EoX, PSIRT, software, warranty
 ```
 
 ### 2. Install the skill
@@ -31,7 +34,7 @@ npm install -g cisco-risport  # Device registration
 npx skills add sieteunoseis/cisco-uc-engineer --skill cisco-uc-engineer
 ```
 
-The skill auto-detects which CLI tools are installed and adapts workflows accordingly. You don't need all four — install what you need.
+The skill auto-detects which CLI tools are installed and adapts workflows accordingly. You don't need all five — install what you need.
 
 ## Available Tools
 
@@ -41,6 +44,7 @@ The skill auto-detects which CLI tools are installed and adapts workflows accord
 | [cisco-dime](https://github.com/sieteunoseis/cisco-dime) | CUCM log collection — SIP traces, SDL, audit logs | [![npm](https://img.shields.io/npm/v/cisco-dime)](https://www.npmjs.com/package/cisco-dime) |
 | [cisco-perfmon](https://github.com/sieteunoseis/cisco-perfmon) | Real-time performance counters — CPU, memory, call stats | [![npm](https://img.shields.io/npm/v/cisco-perfmon)](https://www.npmjs.com/package/cisco-perfmon) |
 | [cisco-risport](https://github.com/sieteunoseis/cisco-risport) | Device registration status — phone reg, CTI, trunk status | [![npm](https://img.shields.io/npm/v/cisco-risport)](https://www.npmjs.com/package/cisco-risport) |
+| [cisco-support](https://github.com/sieteunoseis/cisco-support) | Cisco Support APIs — bugs, EoX, PSIRT, software, warranty | [![npm](https://img.shields.io/npm/v/cisco-support)](https://www.npmjs.com/package/cisco-support) |
 
 ## Troubleshooting Workflows
 
@@ -92,6 +96,8 @@ When a problem is reported, follow this order:
 2. **Is the config correct?** → `cisco-axl get Phone --name <name>`
 3. **What do the logs show?** → `cisco-dime select sip-traces --last 30m`
 4. **Is the system healthy?** → `cisco-perfmon collect "Cisco CallManager" --counter "CallsActive"`
+5. **Are there known bugs?** → `cisco-support bug search --keyword "<error>"`
+6. **Is the hardware end-of-life?** → `cisco-support eox --pid <model>`
 
 Start broad, narrow down. Don't pull traces until you've checked the basics.
 
@@ -101,6 +107,9 @@ Start broad, narrow down. Don't pull traces until you've checked the basics.
 |---|---|
 | [cisco-axl-cli](https://skills.sh/sieteunoseis/cisco-axl/cisco-axl-cli) | Detailed cisco-axl command reference |
 | [cisco-dime-cli](https://skills.sh/sieteunoseis/cisco-dime/cisco-dime-cli) | Detailed cisco-dime command reference |
+| [cisco-perfmon-cli](https://skills.sh/sieteunoseis/cisco-perfmon/cisco-perfmon-cli) | Detailed cisco-perfmon command reference |
+| [cisco-risport-cli](https://skills.sh/sieteunoseis/cisco-risport/cisco-risport-cli) | Detailed cisco-risport command reference |
+| [cisco-support-cli](https://skills.sh/sieteunoseis/cisco-support/cisco-support-cli) | Cisco Support APIs — bugs, EoX, PSIRT |
 | [cisco-ise-cli](https://skills.sh/sieteunoseis/cisco-ise/cisco-ise-cli) | Cisco ISE endpoint & session management |
 | [ss-cli](https://skills.sh/sieteunoseis/ss-cli/ss-cli) | Delinea Secret Server credential management |
 
