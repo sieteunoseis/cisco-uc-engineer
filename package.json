@@ -1,20 +1,24 @@
 {
-  "name": "cisco-uc-engineer",
-  "version": "1.0.0",
-  "description": "Cisco Unified Communications engineer skill for AI agents. Orchestrates cisco-axl, cisco-dime, cisco-perfmon, and cisco-risport for UC troubleshooting, provisioning, and monitoring.",
+  "name": "skills.automate.builders",
+  "version": "1.1.0",
+  "description": "AI agent skills for voice, UC, and telecom infrastructure. Orchestrators and CLI tool skills for AudioCodes, Cisco UC, and more.",
   "keywords": [
     "cisco",
     "cucm",
+    "audiocodes",
     "unified-communications",
+    "voip",
+    "sbc",
     "skills",
     "ai",
-    "troubleshooting"
+    "troubleshooting",
+    "orchestrator"
   ],
   "author": "sieteunoseis (jeremy.worden@gmail.com)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sieteunoseis/cisco-uc-engineer.git"
+    "url": "git+https://github.com/sieteunoseis/skills.automate.builders.git"
   },
   "funding": "https://buymeacoffee.com/automatebldrs"
 }
