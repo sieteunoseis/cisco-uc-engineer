@@ -1,6 +1,6 @@
 ---
 name: cisco-uc-engineer
-description: Cisco Unified Communications engineer skill. Orchestrates cisco-axl, cisco-dime, cisco-perfmon, cisco-risport, cisco-support, cisco-ucce, cisco-yang, and audiocodes-cli CLIs for troubleshooting, provisioning, monitoring, and lifecycle management of UC infrastructure including AudioCodes SBCs. Use when working across multiple Cisco UC tools or diagnosing complex issues.
+description: Cisco Unified Communications engineer skill. Orchestrates cisco-axl, cisco-dime, cisco-perfmon, cisco-risport, cisco-support, cisco-ucce, cisco-yang, audiocodes-cli, and genesys-cli CLIs for troubleshooting, provisioning, monitoring, and lifecycle management of UC infrastructure including AudioCodes SBCs and Genesys Cloud CX. Use when working across multiple Cisco UC tools or diagnosing complex issues.
 license: MIT
 metadata:
   author: sieteunoseis
@@ -9,7 +9,7 @@ metadata:
 
 # Cisco UC Engineer
 
-Orchestration skill for Unified Communications. Connects cisco-axl, cisco-dime, cisco-perfmon, cisco-risport, cisco-support, and audiocodes-cli to solve cross-domain UC problems across Cisco CUCM and AudioCodes SBCs.
+Orchestration skill for Unified Communications. Connects cisco-axl, cisco-dime, cisco-perfmon, cisco-risport, cisco-support, audiocodes-cli, and genesys-cli to solve cross-domain UC problems across Cisco CUCM, AudioCodes SBCs, and Genesys Cloud CX.
 
 ## Tool Detection
 
@@ -23,6 +23,7 @@ cisco-perfmon --version 2>/dev/null && echo "cisco-perfmon: available" || echo "
 cisco-risport --version 2>/dev/null && echo "cisco-risport: available" || echo "cisco-risport: not installed"
 cisco-support --version 2>/dev/null && echo "cisco-support: available" || echo "cisco-support: not installed"
 audiocodes-cli --version 2>/dev/null && echo "audiocodes-cli: available" || echo "audiocodes-cli: not installed"
+genesys-cli --version 2>/dev/null && echo "genesys-cli: available" || echo "genesys-cli: not installed"
 ```
 
 Report what's available and what's missing. If a workflow requires a missing tool, tell the user:
@@ -41,11 +42,13 @@ Adapt workflows to use only the tools that are installed. A partial toolkit is s
 | `cisco-risport`  | Device registration status — phone reg, CTI, trunk status                          | `cisco-risport`  | `cisco-risport-cli` |
 | `cisco-support`  | Cisco Support APIs — bugs, EoX, PSIRT, software, serial coverage                   | `cisco-support`  | `cisco-support-cli` |
 | `audiocodes-cli` | AudioCodes Mediant VE SBC — call stats, alarms, KPIs, health checks, config backup | `audiocodes-cli` | `audiocodes-cli`    |
+| `genesys-cli`    | Genesys Cloud CX — conversations, BYOC trunks, queues, agents, edges, audit        | `genesys-cli`    | `genesys-cli`       |
 
 Each tool has its own skill with detailed command reference. Use those skills for tool-specific questions. This skill is for workflows that span multiple tools.
 
 > Note: cisco-support uses separate Cisco API credentials (not CUCM credentials). It has its own config at `~/.cisco-support/config.json`.
 > Note: audiocodes-cli uses separate device credentials (not CUCM credentials). It has its own config at `~/.audiocodes-cli/config.json`.
+> Note: genesys-cli uses Genesys Cloud OAuth client credentials (not CUCM credentials). It has its own config at `~/.genesys-cli/config.json`.
 
 ## Cluster Alignment
 
@@ -349,6 +352,88 @@ audiocodes-cli calls list --device <sbc>
 audiocodes-cli alarms list --device <sbc>
 ```
 
+### End-to-End Call Trace (CUCM → SBC → Genesys Cloud)
+
+**Tools needed:** cisco-axl, cisco-dime, cisco-risport, audiocodes-cli, genesys-cli
+
+```bash
+# 1. Verify the CUCM line/device and call forward config
+cisco-axl sql query "SELECT dnorpattern, description FROM numplan WHERE dnorpattern = '<extension>'"
+cisco-axl sql query "SELECT cfadestination FROM callforwarddynamic cf JOIN numplan np ON cf.fknumplan = np.pkid WHERE np.dnorpattern = '<extension>'"
+
+# 2. Check registration of the SIP trunk to the SBC
+cisco-risport query --name "<trunk_name>"
+
+# 3. Pull CUCM SDL traces and grep for the call
+cisco-dime select "Cisco CallManager" --last 30m --all-nodes --include-active --download --decompress
+# grep for the dialed number, Call-ID, and trunk name in SDL files
+
+# 4. Check the AudioCodes SBC — did it receive and relay the call?
+audiocodes-cli doctor --device <sbc>
+audiocodes-cli calls list --device <sbc>
+audiocodes-cli alarms list --device <sbc>
+
+# 5. Check Genesys Cloud — did the call arrive?
+genesys-cli doctor
+genesys-cli conversations list --caller <calling_number> --last 1h
+genesys-cli conversations list --callee <called_number> --last 1h
+
+# 6. Check BYOC trunk health on Genesys side
+genesys-cli trunks list
+genesys-cli trunks metrics
+```
+
+**What to look for:**
+
+- CUCM SDL: confirm INVITE sent to SBC IP, look for `call_active` state and `200 OK`
+- AudioCodes: compare attempted vs established calls — large gap means rejection
+- AudioCodes alarms: Proxy Set down alarms indicate Genesys connectivity issues
+- Genesys conversations: matching caller/callee confirms end-to-end delivery
+- Genesys trunks: `connected` + `inService=true` means BYOC trunk is healthy
+- Blank `disconnectType` and `sipResponseCode` in Genesys = normal call handling
+
+### Genesys Cloud Troubleshooting
+
+**Tools needed:** genesys-cli
+
+```bash
+# 1. Check Genesys Cloud connectivity and org health
+genesys-cli doctor
+
+# 2. Check BYOC trunk status — are trunks connected?
+genesys-cli trunks list
+genesys-cli trunks metrics
+
+# 3. Check Edge server status
+genesys-cli edges list
+
+# 4. Search conversation history for a specific call
+genesys-cli conversations list --caller <number> --last 1h
+genesys-cli conversations list --callee <number> --last 1h
+genesys-cli conversations list --queue <queue_name> --last 1h
+
+# 5. Get full detail for a specific conversation
+genesys-cli conversations detail <conversationId>
+
+# 6. Check agent availability
+genesys-cli agents list
+
+# 7. Check queue status
+genesys-cli queues list
+
+# 8. Review recent config changes
+genesys-cli audit list
+```
+
+**What to look for:**
+
+- BYOC trunks not `connected` or `inService=false` — SBC-to-Genesys SIP connectivity issue
+- Edge servers OFFLINE — media processing issues
+- Conversations with `disconnectType` values like `error` or `system` — abnormal terminations
+- High `sipResponseCode` (4xx/5xx) — SIP-level failures
+- Agent presence — are agents available to take calls?
+- Queue member count — are agents assigned to the expected queues?
+
 ## Diagnostic Decision Tree
 
 When the user reports a problem, follow this order:
@@ -360,6 +445,8 @@ When the user reports a problem, follow this order:
 
 5. **Are there known bugs?** → `cisco-support bug search --keyword "<error>" --pid "Cisco Unified Communications Manager"`
 6. **Is the hardware end-of-life?** → `cisco-support eox --pid <model>`
+7. **Did the call reach Genesys?** → `genesys-cli conversations list --caller <number> --last 1h`
+8. **Is the BYOC trunk healthy?** → `genesys-cli trunks list`
 
 Start broad, narrow down. Don't pull traces until you've checked the basics.
 
@@ -371,4 +458,6 @@ Start broad, narrow down. Don't pull traces until you've checked the basics.
 - When pulling logs with cisco-dime, note that timestamps from CUCM are in the server's timezone. Use `--timezone` to convert.
 - Use `cisco-perfmon watch` for live monitoring with sparklines — great for observing trends during testing or incidents.
 - Use `cisco-dime analyze sip-ladder` to render SIP call flow diagrams from SDL trace files.
-- All tools have a `doctor` command for health checks — run `cisco-<tool> doctor` to verify connectivity.
+- All tools have a `doctor` command for health checks — run `cisco-<tool> doctor` or `genesys-cli doctor` to verify connectivity.
+- genesys-cli uses OAuth client credentials and connects to the Genesys Cloud Platform API. It supports `--org <name>` for multi-org environments and `--region <region>` to target different Genesys Cloud regions (e.g., usw2, use1, aps1).
+- When tracing calls end-to-end across CUCM → SBC → Genesys, correlate by timestamp and caller/callee numbers across all three systems.
