@@ -1,6 +1,6 @@
 ---
 name: cisco-uc-engineer
-description: Cisco Unified Communications engineer skill. Orchestrates cisco-axl, cisco-dime, cisco-perfmon, cisco-risport, cisco-support, cisco-ucce, cisco-yang, audiocodes-cli, and genesys-cli CLIs for troubleshooting, provisioning, monitoring, and lifecycle management of UC infrastructure including AudioCodes SBCs and Genesys Cloud CX. Use when working across multiple Cisco UC tools or diagnosing complex issues.
+description: Cisco Unified Communications engineer skill. Orchestrates cisco-axl, cisco-dime, cisco-perfmon, cisco-risport, cisco-support, cisco-ucce, cisco-yang, audiocodes-cli, genesys-cli CLIs, and the cisco-cdr MCP server for troubleshooting, provisioning, monitoring, CDR analysis, and lifecycle management of UC infrastructure including AudioCodes SBCs and Genesys Cloud CX. Use when working across multiple Cisco UC tools or diagnosing complex issues.
 license: MIT
 metadata:
   author: sieteunoseis
@@ -9,7 +9,7 @@ metadata:
 
 # Cisco UC Engineer
 
-Orchestration skill for Unified Communications. Connects cisco-axl, cisco-dime, cisco-perfmon, cisco-risport, cisco-support, audiocodes-cli, and genesys-cli to solve cross-domain UC problems across Cisco CUCM, AudioCodes SBCs, and Genesys Cloud CX.
+Orchestration skill for Unified Communications. Connects cisco-axl, cisco-dime, cisco-perfmon, cisco-risport, cisco-support, audiocodes-cli, genesys-cli, and the cisco-cdr MCP server to solve cross-domain UC problems across Cisco CUCM, AudioCodes SBCs, and Genesys Cloud CX.
 
 ## Tool Detection
 
@@ -24,6 +24,9 @@ cisco-risport --version 2>/dev/null && echo "cisco-risport: available" || echo "
 cisco-support --version 2>/dev/null && echo "cisco-support: available" || echo "cisco-support: not installed"
 audiocodes-cli --version 2>/dev/null && echo "audiocodes-cli: available" || echo "audiocodes-cli: not installed"
 genesys-cli --version 2>/dev/null && echo "genesys-cli: available" || echo "genesys-cli: not installed"
+
+# Check cisco-cdr MCP server (requires MCP configuration, not a CLI tool)
+# Verify by calling: cdr_health
 ```
 
 Report what's available and what's missing. If a workflow requires a missing tool, tell the user:
@@ -34,21 +37,23 @@ Adapt workflows to use only the tools that are installed. A partial toolkit is s
 
 ## Available Tools
 
-| Tool             | Purpose                                                                            | npm Package      | Skill               |
-| ---------------- | ---------------------------------------------------------------------------------- | ---------------- | ------------------- |
-| `cisco-axl`      | CUCM configuration — phones, lines, route patterns, CSS, device pools, SIP trunks  | `cisco-axl`      | `cisco-axl-cli`     |
-| `cisco-dime`     | CUCM log collection — SIP traces, SDL, audit logs, service logs                    | `cisco-dime`     | `cisco-dime-cli`    |
-| `cisco-perfmon`  | Real-time performance counters — CPU, memory, call stats                           | `cisco-perfmon`  | `cisco-perfmon-cli` |
-| `cisco-risport`  | Device registration status — phone reg, CTI, trunk status                          | `cisco-risport`  | `cisco-risport-cli` |
-| `cisco-support`  | Cisco Support APIs — bugs, EoX, PSIRT, software, serial coverage                   | `cisco-support`  | `cisco-support-cli` |
-| `audiocodes-cli` | AudioCodes Mediant VE SBC — call stats, alarms, KPIs, health checks, config backup | `audiocodes-cli` | `audiocodes-cli`    |
-| `genesys-cli`    | Genesys Cloud CX — conversations, BYOC trunks, queues, agents, edges, audit        | `genesys-cli`    | `genesys-cli`       |
+| Tool              | Purpose                                                                            | npm Package           | Skill               |
+| ----------------- | ---------------------------------------------------------------------------------- | --------------------- | ------------------- |
+| `cisco-axl`       | CUCM configuration — phones, lines, route patterns, CSS, device pools, SIP trunks  | `cisco-axl`           | `cisco-axl-cli`     |
+| `cisco-dime`      | CUCM log collection — SIP traces, SDL, audit logs, service logs                    | `cisco-dime`          | `cisco-dime-cli`    |
+| `cisco-perfmon`   | Real-time performance counters — CPU, memory, call stats                           | `cisco-perfmon`       | `cisco-perfmon-cli` |
+| `cisco-risport`   | Device registration status — phone reg, CTI, trunk status                          | `cisco-risport`       | `cisco-risport-cli` |
+| `cisco-support`   | Cisco Support APIs — bugs, EoX, PSIRT, software, serial coverage                   | `cisco-support`       | `cisco-support-cli` |
+| `audiocodes-cli`  | AudioCodes Mediant VE SBC — call stats, alarms, KPIs, health checks, config backup | `audiocodes-cli`      | `audiocodes-cli`    |
+| `genesys-cli`     | Genesys Cloud CX — conversations, BYOC trunks, queues, agents, edges, audit        | `genesys-cli`         | `genesys-cli`       |
+| `cisco-cdr` (MCP) | CDR/CMR analysis — call search, call trace, quality analysis, statistics, health   | `cisco-cdr-processor` | `cisco-cdr-mcp`     |
 
 Each tool has its own skill with detailed command reference. Use those skills for tool-specific questions. This skill is for workflows that span multiple tools.
 
 > Note: cisco-support uses separate Cisco API credentials (not CUCM credentials). It has its own config at `~/.cisco-support/config.json`.
 > Note: audiocodes-cli uses separate device credentials (not CUCM credentials). It has its own config at `~/.audiocodes-cli/config.json`.
 > Note: genesys-cli uses Genesys Cloud OAuth client credentials (not CUCM credentials). It has its own config at `~/.genesys-cli/config.json`.
+> Note: cisco-cdr is an MCP server (not a CLI tool). It requires the cisco-cdr-processor service running with PostgreSQL. Configure the MCP endpoint in your Claude Code MCP settings.
 
 ## Cluster Alignment
 
@@ -126,6 +131,54 @@ cisco-dime select sip-traces --last 1h --download
 - Is the pattern in a partition that's in the calling CSS?
 - Route pattern → route list → route group → trunk — follow the chain
 - SIP traces show the actual INVITE routing and any redirects/rejects
+
+### CDR-Based Call Investigation
+
+**Tools needed:** cisco-cdr (MCP), cisco-dime, cisco-axl
+
+```
+# 1. Search CDR for the reported call
+cdr_search calling="5551234" called="5559999" last="2h"
+
+# 2. Trace the specific call for all legs and CMR quality data
+cdr_trace call_id="<globalcallid_callid from search>"
+
+# 3. Run the returned cisco-dime SDL trace command for SIP analysis
+# (cdr_trace returns a ready-to-run cisco-dime command)
+
+# 4. Cross-reference device config if needed
+cisco-axl get Phone --name <device_from_cdr> --format json
+```
+
+**What to look for:**
+
+- Cause code — 16 is normal, anything else indicates an issue (see cause description in results)
+- Multiple CDR legs — indicates call was transferred, forwarded, or hit a CTI route
+- CMR quality data — MOS, jitter, latency, packet loss for audio quality issues
+- Enrichment data — device descriptions, users, pools, locations help identify who/where
+
+### CDR Quality Analysis
+
+**Tools needed:** cisco-cdr (MCP), cisco-perfmon
+
+```
+# 1. Find poor-quality calls
+cdr_quality mos_below=3.0 last="1d"
+
+# 2. Check call volume and failure patterns
+cdr_stats type="by_cause" last="1d"
+cdr_stats type="by_device" last="1d"
+
+# 3. Correlate with system health at the time
+cisco-perfmon collect "Cisco CallManager" --counter "CallsActive,RegisteredHardwarePhones"
+```
+
+**What to look for:**
+
+- Clusters of low-MOS calls from the same device or location — indicates a network issue in that segment
+- High jitter/latency — WAN or QoS problem
+- Packet loss — network congestion or misconfigured QoS
+- Specific devices with high failure rates — configuration or hardware issue
 
 ### Call Quality / One-Way Audio
 
@@ -440,15 +493,17 @@ When the user reports a problem, follow this order:
 
 1. **Is it registered to CUCM?** → `cisco-risport query --mac <mac>`
 2. **Is the config correct?** → `cisco-axl get Phone --name <name>`
-3. **What do the logs show?** → `cisco-dime select sip-traces --last 30m`
-4. **Is the system healthy?** → `cisco-perfmon collect "Cisco CallManager" --counter "CallsActive"`
+3. **What do the CDRs show?** → `cdr_search calling="<number>" last="2h"` (if cisco-cdr MCP is available)
+4. **What do the logs show?** → `cisco-dime select sip-traces --last 30m`
+5. **Is the system healthy?** → `cisco-perfmon collect "Cisco CallManager" --counter "CallsActive"`
+6. **Was call quality poor?** → `cdr_quality mos_below=3.5 last="2h"` (if cisco-cdr MCP is available)
 
-5. **Are there known bugs?** → `cisco-support bug search --keyword "<error>" --pid "Cisco Unified Communications Manager"`
-6. **Is the hardware end-of-life?** → `cisco-support eox --pid <model>`
-7. **Did the call reach Genesys?** → `genesys-cli conversations list --caller <number> --last 1h`
-8. **Is the BYOC trunk healthy?** → `genesys-cli trunks list`
+7. **Are there known bugs?** → `cisco-support bug search --keyword "<error>" --pid "Cisco Unified Communications Manager"`
+8. **Is the hardware end-of-life?** → `cisco-support eox --pid <model>`
+9. **Did the call reach Genesys?** → `genesys-cli conversations list --caller <number> --last 1h`
+10. **Is the BYOC trunk healthy?** → `genesys-cli trunks list`
 
-Start broad, narrow down. Don't pull traces until you've checked the basics.
+Start broad, narrow down. Don't pull traces until you've checked the basics. If the cisco-cdr MCP server is available, CDR search is a fast way to confirm whether a call happened and what the outcome was before diving into logs.
 
 ## Important Notes
 
