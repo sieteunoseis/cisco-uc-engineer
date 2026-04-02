@@ -9,9 +9,9 @@ AI agent skills for voice, UC, and telecom infrastructure. Each skill teaches AI
 
 Orchestrators combine multiple CLI tools into cross-domain workflows.
 
-| Orchestrator                                                                                   | Description                                                                                           | Docs                                                   |
-| ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| [cisco-uc-engineer](https://skills.sh/sieteunoseis/skills.automate.builders/cisco-uc-engineer) | Cisco Unified Communications — orchestrates axl, dime, perfmon, risport, support, ucce, and yang CLIs | [docs/cisco-uc-engineer.md](docs/cisco-uc-engineer.md) |
+| Orchestrator                                                                                   | Description                                                                                                                              | Docs                                                   |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [cisco-uc-engineer](https://skills.sh/sieteunoseis/skills.automate.builders/cisco-uc-engineer) | Cisco Unified Communications — orchestrates axl, dime, perfmon, risport, support, ucce, yang, audiocodes, genesys CLIs and cisco-cdr MCP | [docs/cisco-uc-engineer.md](docs/cisco-uc-engineer.md) |
 
 ## Skills
 
@@ -36,6 +36,12 @@ Individual CLI tool skills with detailed command reference.
 | [cisco-yang-cli](https://skills.sh/sieteunoseis/cisco-yang/cisco-yang-cli)             | [cisco-yang](https://github.com/sieteunoseis/cisco-yang)                   | IOS-XE voice gateways — RESTCONF, dial-peers, SIP trace                 | [![npm](https://img.shields.io/npm/v/cisco-yang)](https://www.npmjs.com/package/cisco-yang)       |
 | [cisco-ise-cli](https://skills.sh/sieteunoseis/cisco-ise/cisco-ise-cli)                | [cisco-ise](https://github.com/sieteunoseis/cisco-ise)                     | Cisco ISE — endpoints, guests, RADIUS/TACACS monitoring                 | [![npm](https://img.shields.io/npm/v/cisco-ise)](https://www.npmjs.com/package/cisco-ise)         |
 | [cisco-cdr-mcp](https://skills.sh/sieteunoseis/skills.automate.builders/cisco-cdr-mcp) | [cisco-cdr-processor](https://github.com/sieteunoseis/cisco-cdr-processor) | CDR/CMR analysis — call search, trace, quality, statistics (MCP server) | —                                                                                                 |
+
+### Genesys Cloud
+
+| Skill                                                                              | CLI Tool                                                   | Description                                                   | npm                                                                                                                       |
+| ---------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| [genesys-cli](https://skills.sh/sieteunoseis/skills.automate.builders/genesys-cli) | [genesys-cli](https://github.com/sieteunoseis/genesys-cli) | Genesys Cloud CX — conversations, BYOC trunks, queues, agents | [![npm](https://img.shields.io/npm/v/@sieteunoseis/genesys-cli)](https://www.npmjs.com/package/@sieteunoseis/genesys-cli) |
 
 ### Infrastructure
 
