@@ -24,6 +24,8 @@
     "ise",
     "ios-xe",
     "yang",
-    "restconf"
+    "restconf",
+    "windmill",
+    "wmill"
   ]
 }

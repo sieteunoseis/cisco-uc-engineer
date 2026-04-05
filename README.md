@@ -49,6 +49,12 @@ Individual CLI tool skills with detailed command reference.
 | ------------------------------------------------------ | ------------------------------------------------ | ------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | [ss-cli](https://skills.sh/sieteunoseis/ss-cli/ss-cli) | [ss-cli](https://github.com/sieteunoseis/ss-cli) | Delinea Secret Server — credential management, env sync | [![npm](https://img.shields.io/npm/v/ss-cli)](https://www.npmjs.com/package/ss-cli) |
 
+### Windmill
+
+| Skill                                                                                | CLI Tool                                            | Description                                                                                     | Hooks                                                                                        |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [wmill-safety](https://skills.sh/sieteunoseis/skills.automate.builders/wmill-safety) | [wmill](https://www.windmill.dev/docs/advanced/cli) | Windmill CLI safety guard — risk tiers, pre-flight checklists, destructive operation protection | [windmill-safety](https://github.com/sieteunoseis/cmds.cc/tree/master/hooks/windmill-safety) |
+
 ### Community
 
 | Skill | CLI Tool                                              | Description                                                | npm                                                                                                                 |
