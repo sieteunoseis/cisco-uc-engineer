@@ -51,9 +51,9 @@ Individual CLI tool skills with detailed command reference.
 
 ### Windmill
 
-| Skill                                                                                | CLI Tool                                            | Description                                                                                     | Hooks                                                                                                        |
-| ------------------------------------------------------------------------------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| [wmill-safety](https://skills.sh/sieteunoseis/skills.automate.builders/wmill-safety) | [wmill](https://www.windmill.dev/docs/advanced/cli) | Windmill CLI safety guard — risk tiers, pre-flight checklists, destructive operation protection | [windmill-safety](https://github.com/sieteunoseis/hooks.automate.builders/tree/master/hooks/windmill-safety) |
+| Skill                                                                                | CLI Tool                                            | Description                                                                                     | Hooks                                                                                   |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| [wmill-safety](https://skills.sh/sieteunoseis/skills.automate.builders/wmill-safety) | [wmill](https://www.windmill.dev/docs/advanced/cli) | Windmill CLI safety guard — risk tiers, pre-flight checklists, destructive operation protection | [windmill-safety](https://github.com/cmds-cc/cmds.cc/tree/master/hooks/windmill-safety) |
 
 ### Community
 
@@ -80,7 +80,7 @@ npx @cmds-cc/skills add sieteunoseis/cisco-support      # cisco-support-cli skil
 Install hooks (optional safety enforcement):
 
 ```bash
-npx @cmds-cc/hooks add sieteunoseis/hooks.automate.builders/hooks/windmill-safety
+npx @cmds-cc/hooks add cmds-cc/cmds.cc/hooks/windmill-safety
 ```
 
 ## Skill Sync
