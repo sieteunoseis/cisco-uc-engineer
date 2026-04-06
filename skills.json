@@ -8,17 +8,20 @@
   {
     "name": "cisco-axl-cli",
     "description": "Manage CUCM via AXL — phones, lines, route patterns, SIP profiles, SQL queries",
-    "author": "sieteunoseis"
+    "author": "sieteunoseis",
+    "hooks": "sieteunoseis/hooks/cisco-cli-safety"
   },
   {
     "name": "cisco-ise-cli",
     "description": "Manage Cisco ISE — endpoints, guests, network devices, RADIUS/TACACS",
-    "author": "sieteunoseis"
+    "author": "sieteunoseis",
+    "hooks": "sieteunoseis/hooks/cisco-cli-safety"
   },
   {
     "name": "cisco-yang-cli",
     "description": "Manage IOS-XE devices via RESTCONF — voice troubleshooting, dial-peers, SIP trace",
-    "author": "sieteunoseis"
+    "author": "sieteunoseis",
+    "hooks": "sieteunoseis/hooks/cisco-cli-safety"
   },
   {
     "name": "cisco-risport-cli",
@@ -53,7 +56,8 @@
   {
     "name": "audiocodes-cli",
     "description": "Troubleshoot VoIP on AudioCodes SBCs — call stats, alarms, SIP trace",
-    "author": "sieteunoseis"
+    "author": "sieteunoseis",
+    "hooks": "sieteunoseis/hooks/cisco-cli-safety"
   },
   {
     "name": "genesys-cli",
@@ -68,7 +72,8 @@
   {
     "name": "wmill-safety",
     "description": "Windmill CLI safety guard — risk tiers, pre-flight checklists, destructive operation protection",
-    "author": "sieteunoseis"
+    "author": "sieteunoseis",
+    "hooks": "sieteunoseis/hooks/windmill-safety"
   },
   {
     "name": "wmill-commit",
