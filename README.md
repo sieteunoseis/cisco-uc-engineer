@@ -51,15 +51,22 @@ Individual CLI tool skills with detailed command reference.
 
 ### Windmill
 
-| Skill                                                         | CLI Tool                                            | Description                                                                                     | Hooks                                                                              |
-| ------------------------------------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| [wmill-safety](https://skills.sh/cmds-cc/skills/wmill-safety) | [wmill](https://www.windmill.dev/docs/advanced/cli) | Windmill CLI safety guard — risk tiers, pre-flight checklists, destructive operation protection | [windmill-safety](https://github.com/sieteunoseis/hooks/tree/main/windmill-safety) |
+| Skill                                                                           | Description                                                                            | Author        |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------- |
+| [wmill-safety](https://skills.sh/cmds-cc/skills/wmill-safety)                   | CLI safety guard — risk tiers, pre-flight checklists, destructive operation protection | sieteunoseis  |
+| [wmill-commit](https://skills.sh/cmds-cc/skills/wmill-commit)                   | Git commits with conventional commit format                                            | windmill-labs |
+| [wmill-review](https://skills.sh/cmds-cc/skills/wmill-review)                   | Code review PRs for bugs and CLAUDE.md compliance                                      | windmill-labs |
+| [wmill-pr](https://skills.sh/cmds-cc/skills/wmill-pr)                           | Open draft pull requests with conventional commit titles                               | windmill-labs |
+| [wmill-refine](https://skills.sh/cmds-cc/skills/wmill-refine)                   | End-of-session reflection — update docs with lessons learned                           | windmill-labs |
+| [wmill-native-trigger](https://skills.sh/cmds-cc/skills/wmill-native-trigger)   | Guide for adding native trigger services (backend + frontend)                          | windmill-labs |
+| [wmill-rust-backend](https://skills.sh/cmds-cc/skills/wmill-rust-backend)       | Rust coding guidelines for the Windmill backend                                        | windmill-labs |
+| [wmill-svelte-frontend](https://skills.sh/cmds-cc/skills/wmill-svelte-frontend) | Svelte coding guidelines for the Windmill frontend                                     | windmill-labs |
 
 ### Community
 
-| Skill | CLI Tool                                              | Description                                                | npm                                                                                                                 | Hooks |
-| ----- | ----------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----- |
-| —     | [webex-cli](https://github.com/Cloverhound/webex-cli) | Webex Calling — users, locations, numbers, auto-attendants | [![npm](https://img.shields.io/npm/v/@cloverhound/webex-cli)](https://www.npmjs.com/package/@cloverhound/webex-cli) | —     |
+| Skill | CLI Tool                                              | Description                                                | Hooks |
+| ----- | ----------------------------------------------------- | ---------------------------------------------------------- | ----- |
+| —     | [webex-cli](https://github.com/Cloverhound/webex-cli) | Webex Calling — users, locations, numbers, auto-attendants | —     |
 
 ## Installation
 
