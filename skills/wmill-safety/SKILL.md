@@ -165,9 +165,9 @@ wmill sync push
 
 ## Optional: Hook Installation
 
-The safety rules above are guidance that Claude follows voluntarily. For hard enforcement that blocks dangerous commands even if bypassed, install the hooks from the `sieteunoseis/cmds.cc` repository.
+The safety rules above are guidance that Claude follows voluntarily. For hard enforcement that blocks dangerous commands even if bypassed, install the hooks from the `sieteunoseis/hooks.automate.builders` repository.
 
-**Source:** [hooks/windmill-safety](https://github.com/sieteunoseis/cmds.cc/tree/master/hooks/windmill-safety)
+**Source:** [hooks/windmill-safety](https://github.com/sieteunoseis/hooks.automate.builders/tree/master/hooks/windmill-safety)
 
 ### Available Hooks
 
@@ -183,7 +183,11 @@ The safety rules above are guidance that Claude follows voluntarily. For hard en
 
 ### Installation
 
-Download `claude-hooks.json` from the repo and merge the hooks into your `.claude/settings.json` under the `hooks` key. Each hook can be individually enabled or disabled.
+```bash
+npx @cmds-cc/hooks add sieteunoseis/hooks.automate.builders/hooks/windmill-safety
+```
+
+Or manually download `claude-hooks.json` from the repo and merge the hooks into your `.claude/settings.json` under the `hooks` key. Each hook can be individually enabled or disabled.
 
 ### Creating Custom Hooks
 

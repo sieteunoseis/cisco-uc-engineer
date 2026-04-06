@@ -51,9 +51,9 @@ Individual CLI tool skills with detailed command reference.
 
 ### Windmill
 
-| Skill                                                                                | CLI Tool                                            | Description                                                                                     | Hooks                                                                                        |
-| ------------------------------------------------------------------------------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| [wmill-safety](https://skills.sh/sieteunoseis/skills.automate.builders/wmill-safety) | [wmill](https://www.windmill.dev/docs/advanced/cli) | Windmill CLI safety guard — risk tiers, pre-flight checklists, destructive operation protection | [windmill-safety](https://github.com/sieteunoseis/cmds.cc/tree/master/hooks/windmill-safety) |
+| Skill                                                                                | CLI Tool                                            | Description                                                                                     | Hooks                                                                                                        |
+| ------------------------------------------------------------------------------------ | --------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| [wmill-safety](https://skills.sh/sieteunoseis/skills.automate.builders/wmill-safety) | [wmill](https://www.windmill.dev/docs/advanced/cli) | Windmill CLI safety guard — risk tiers, pre-flight checklists, destructive operation protection | [windmill-safety](https://github.com/sieteunoseis/hooks.automate.builders/tree/master/hooks/windmill-safety) |
 
 ### Community
 
@@ -66,15 +66,21 @@ Individual CLI tool skills with detailed command reference.
 Install the orchestrator (includes all skills in this repo):
 
 ```bash
-npx skills add sieteunoseis/skills.automate.builders
+npx @cmds-cc/skills add sieteunoseis/skills.automate.builders
 ```
 
 Or install individual skills from their source repos:
 
 ```bash
-npx skills add sieteunoseis/cisco-axl          # cisco-axl-cli skill
-npx skills add sieteunoseis/audiocodes-cli     # audiocodes-cli skill
-npx skills add sieteunoseis/cisco-support      # cisco-support-cli skill
+npx @cmds-cc/skills add sieteunoseis/cisco-axl          # cisco-axl-cli skill
+npx @cmds-cc/skills add sieteunoseis/audiocodes-cli     # audiocodes-cli skill
+npx @cmds-cc/skills add sieteunoseis/cisco-support      # cisco-support-cli skill
+```
+
+Install hooks (optional safety enforcement):
+
+```bash
+npx @cmds-cc/hooks add sieteunoseis/hooks.automate.builders/hooks/windmill-safety
 ```
 
 ## Skill Sync
